@@ -1,68 +1,82 @@
-:root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
+/* Ensure the body centers everything properly */
 body {
-  margin: 0;
+  font-family: "Arial", sans-serif;
+  background-color: #f4f6f9;
+  color: #333;
   display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; /* Ensure full screen height */
+  flex-direction: column;
+  margin: 0;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+/* Wrapper container styling */
+div {
+  width: 90%;
+  max-width: 1200px;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  margin-top: 20px;
 }
 
+/* Ensure buttons are visible and properly styled */
 button {
+  background-color: #3498db; /* Blue background */
+  color: white;
+  font-size: 16px;
+  padding: 12px 24px;
+  border: none;
   border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
   cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  transition: all 0.3s ease;
+  margin: 15px 0; /* Add spacing for visibility */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+button:hover {
+  background-color: #2980b9; /* Darker blue on hover */
 }
+
+button:focus {
+  outline: none;
+  border: 2px solid #2980b9;
+}
+
+/* Spacing for the account display */
+p {
+  margin-top: 10px;
+  font-size: 18px;
+  color: #555;
+}
+
+/* Input field styles */
+input[type="text"] {
+  width: 100%; /* Full width of parent container */
+  max-width: 400px; /* Optional: Limit the max width */
+  padding: 10px 15px; /* Add padding for better usability */
+  font-size: 16px; /* Larger font for readability */
+  border: 2px solid #ddd; /* Light gray border */
+  border-radius: 8px; /* Rounded corners */
+  outline: none; /* Remove default outline */
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  margin: 10px 4px; /* Space between fields */
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle inner shadow */
+  
+}
+
+/* Input field focus state */
+input[type="text"]:focus {
+  border-color: #3498db; /* Blue border on focus */
+  box-shadow: 0 0 8px rgba(52, 152, 219, 0.3); /* Subtle blue glow */
+}
+
+/* Placeholder styling */
+input[type="text"]::placeholder {
+  color: #aaa; /* Light gray text for placeholder */
+  font-style: italic; /* Italicize placeholder text */
+}
+

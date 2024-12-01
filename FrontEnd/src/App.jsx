@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Web3 from "web3";
 import P2PEnergyTrading from "./P2PEnergyTrading.json"; // Replace with your ABI file
+import "./index.css";
 
 function App() {
   const [account, setAccount] = useState("");
@@ -12,6 +13,7 @@ function App() {
   const [requestEnergyAmount, setRequestEnergyAmount] = useState("");
   const [requestMaxPricePerKWh, setRequestMaxPricePerKWh] = useState("");
   const [contractBalance, setContractBalance] = useState(0);
+  const [isDarkTheme, setIsDarkTheme] = useState(false);
 
   useEffect(() => {
     fetchContractBalance();
@@ -167,16 +169,14 @@ function App() {
       (requestEnergyAmount * requestMaxPricePerKWh).toString(),
       "ether"
     );
-    
-    
 
     if (contract) {
-      const result=await contract.methods
+      const result = await contract.methods
         .placeRequest(energyAmountInWei, maxPricePerKWhInWei)
         .send({
           from: account,
           value: totalValue,
-          gas:300000,
+          gas: 300000,
         });
     }
     console.log("Request placed successfully.");
@@ -204,6 +204,10 @@ function App() {
       console.error("Error fetching contract balance:", error);
     }
   };
+  const toggleTheme = () => {
+    setIsDarkTheme((prev) => !prev);
+  };
+
 
   return (
     <div>
@@ -270,6 +274,7 @@ function App() {
           ))}
         </ul>
       </div>
+
       <div>
         <h3>Contract Balance: {contractBalance} ETH</h3>
       </div>
