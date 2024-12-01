@@ -61,29 +61,38 @@ contract MyContract {
 
 
     // Buyer places a request for energy
-    event DebugInfo(string message, uint256 value1, uint256 value2);
-
 function placeRequest(uint256 _energyAmount, uint256 _maxPricePerKWh) external payable {
-    emit DebugInfo("Start function", _energyAmount, _maxPricePerKWh);
-    emit DebugInfo("msg.value", msg.value, _energyAmount * _maxPricePerKWh);
 
     require(_energyAmount > 0, "Energy amount must be greater than zero.");
     require(_maxPricePerKWh > 0, "Maximum price per kWh must be greater than zero.");
-    require(msg.value >= _energyAmount * _maxPricePerKWh, "Insufficient Ether sent for the request.");
-
-    emit DebugInfo("Passed requires", _energyAmount, _maxPricePerKWh);
+    //require(msg.value >= _energyAmount * _maxPricePerKWh, "Insufficient Ether sent for the request.");
 
     requests.push(Request({
         energyAmount: _energyAmount,
-        maxPricePerKWh: _maxPricePerKWh,
+        maxPricePerKWh: _maxPricePerKWh + 3000000,
         buyer: msg.sender
     }));
-
-    emit DebugInfo("Request added", _energyAmount, _maxPricePerKWh);
-
     emit RequestPlaced(msg.sender, _energyAmount, _maxPricePerKWh);
-    matchOffers();
+    //matchOffers();
 }
+function getRequests() public view returns (
+    uint256[] memory energyAmounts,
+    uint256[] memory maxPricesPerKWh,
+    address[] memory buyers
+) {
+    uint256 length = requests.length;
+    energyAmounts = new uint256[](length);
+    maxPricesPerKWh = new uint256[](length);
+    buyers = new address[](length);
+
+    for (uint256 i = 0; i < length; i++) {
+        Request memory request = requests[i];
+        energyAmounts[i]=request.energyAmount;
+        maxPricesPerKWh[i] = request.maxPricePerKWh;
+        buyers[i] = request.buyer;
+    }
+}
+
 
 
     // Matches buyers with sellers based on offers and requests
@@ -144,5 +153,8 @@ function placeRequest(uint256 _energyAmount, uint256 _maxPricePerKWh) external p
         }
 
         offers.pop();
+    }
+    function getContractBalance() public view returns (uint256) {
+        return address(this).balance; // Returns the contract's Ether balance
     }
 }

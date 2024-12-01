@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Web3 from "web3";
 import P2PEnergyTrading from "./P2PEnergyTrading.json"; // Replace with your ABI file
 
@@ -11,6 +11,11 @@ function App() {
   const [offerPricePerKWh, setOfferPricePerKWh] = useState("");
   const [requestEnergyAmount, setRequestEnergyAmount] = useState("");
   const [requestMaxPricePerKWh, setRequestMaxPricePerKWh] = useState("");
+  const [contractBalance, setContractBalance] = useState(0);
+
+  useEffect(() => {
+    fetchContractBalance();
+  }, []);
 
   const connectWallet = async () => {
     if (window.ethereum) {
@@ -19,7 +24,7 @@ function App() {
       const accounts = await web3.eth.getAccounts();
       setAccount(accounts[0]);
 
-      const contractAddress = "0x93D3Bc4B750202a8430B351994a98d9A716CDb99"; // Replace with your deployed contract address
+      const contractAddress = "0x5deb94C2fF5Ba91C95953B028fB1105361D624f6"; // Replace with your deployed contract address
       const contractInstance = new web3.eth.Contract(
         P2PEnergyTrading.abi,
         contractAddress
@@ -70,17 +75,33 @@ function App() {
   const fetchRequests = async () => {
     try {
       if (contract) {
-        const result = await contract.methods.requests().call({ gas: 500000 });
-        if (result && result.length > 0) {
-          const parsedRequests = result.map((request) => ({
-            buyer: request.buyer,
-            energyAmount: Web3.utils.fromWei(request.energyAmount, "ether"),
-            maxPricePerKWh: Web3.utils.fromWei(request.maxPricePerKWh, "ether"),
-          }));
-          setRequests(parsedRequests);
-        } else {
-          console.warn("No requests found.");
-        }
+        // Fetch requests data from the contract
+        const result = await contract.methods.getRequests().call();
+
+        console.log("Raw Requests Data:", result);
+
+        // Extract energy amounts, max prices, and buyers
+        const energyAmounts = result.energyAmounts;
+        const maxPricesPerKWh = result.maxPricesPerKWh;
+        const buyers = result.buyers;
+
+        // Combine them into a unified array
+        const parsedRequests = energyAmounts.map((_, index) => ({
+          buyer: buyers[index],
+          energyAmount: Web3.utils.fromWei(
+            energyAmounts[index].toString(),
+            "ether"
+          ), // Convert from Wei to Ether
+          maxPricePerKWh: Web3.utils.fromWei(
+            maxPricesPerKWh[index].toString(),
+            "ether"
+          ), // Convert from Wei to Ether
+        }));
+
+        console.log("Parsed Requests Data:", parsedRequests);
+
+        // Update state with parsed requests
+        setRequests(parsedRequests);
       } else {
         console.error("Contract is not initialized.");
       }
@@ -146,26 +167,41 @@ function App() {
       (requestEnergyAmount * requestMaxPricePerKWh).toString(),
       "ether"
     );
+    
+    
 
-    try {
-      if (contract) {
-        console.log(contract.methods.placeRequest(energyAmountInWei, maxPricePerKWhInWei).send({
+    if (contract) {
+      const result=await contract.methods
+        .placeRequest(energyAmountInWei, maxPricePerKWhInWei)
+        .send({
           from: account,
           value: totalValue,
-        }));
-        await contract.methods
-          .placeRequest(energyAmountInWei, maxPricePerKWhInWei)
-          .send({
-            from: account,
-            value: totalValue,
-          });
+          gas:300000,
+        });
+    }
+    console.log("Request placed successfully.");
+    fetchRequests();
+    fetchContractBalance();
+  };
 
-        console.log("Request placed successfully.");
+  const fetchContractBalance = async () => {
+    try {
+      if (contract) {
+        // Call the getContractBalance method to fetch the contract's balance
+        const balanceWei = await contract.methods.getContractBalance().call();
+
+        // Convert from Wei to Ether using Web3 utility
+        const balanceEther = Web3.utils.fromWei(balanceWei, "ether");
+
+        console.log("Contract Balance (in Ether):", balanceEther);
+
+        // You can update the UI or state with the balance
+        setContractBalance(balanceEther);
       } else {
         console.error("Contract is not initialized.");
       }
     } catch (error) {
-      console.error("Error placing request:", error.message || error);
+      console.error("Error fetching contract balance:", error);
     }
   };
 
@@ -233,6 +269,9 @@ function App() {
             </li>
           ))}
         </ul>
+      </div>
+      <div>
+        <h3>Contract Balance: {contractBalance} ETH</h3>
       </div>
     </div>
   );
