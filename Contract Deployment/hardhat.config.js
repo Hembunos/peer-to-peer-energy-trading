@@ -7,7 +7,7 @@ module.exports = {
       url: "http://127.0.0.1:7545",
       chainID: 1337,
       accounts: [
-        "0xbadd8a6222b645f4601b8380d4ece5ed108140f4eba9ed4290c853168b810590",
+        "0xb7b8059c9298dc0d40ff046ec30b538aff3e742930802409a90e7878ad2e8dab",
       ],
       gas: 6000000,
     },
